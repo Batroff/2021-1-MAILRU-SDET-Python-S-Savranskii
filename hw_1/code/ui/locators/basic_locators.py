@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 # Main page
-MAIN_PAGE_LOGIN_BTN_LOCATOR = (By.XPATH, "//div[contains(@class, 'responseHead-module-button')]")
+MAIN_PAGE_LOGIN_BTN_LOCATOR = (By.XPATH, "//div[text()='Войти']")
 
 # Login popup
 INPUT_EMAIL_LOCATOR = (By.XPATH, "//input[contains(@class, 'authForm') and @name='email']")
@@ -9,7 +9,7 @@ INPUT_PASSWORD_LOCATOR = (By.XPATH, "//input[contains(@class, 'authForm') and @n
 FORM_LOGIN_BTN_LOCATOR = (By.XPATH, "//div[contains(@class, 'authForm') and text()='Войти']")
 
 # Logged in pages
-OPEN_MENU_LOCATOR = (By.XPATH, "//div[contains(@class, 'right-module-rightWrap-') and //a[@href='/logout']]")
+OPEN_MENU_LOCATOR = (By.XPATH, "//div[contains(text(), 'Баланс')]")
 LOGOUT_BTN_LOCATOR = (By.XPATH, "//a[@href='/logout']")
 
 CONTACT_PAGE_BTN_LOCATOR = (By.XPATH, "//a[@href='/profile']")
