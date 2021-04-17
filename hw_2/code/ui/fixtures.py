@@ -41,7 +41,7 @@ def get_driver(browser_name, download_dir):
 @allure.description('Returns current time')
 @pytest.fixture(scope='function')
 def time_now():
-    return datetime.now().strftime('%H_%M_%S')
+    return datetime.now().strftime('%H_%M_%S.%f')
 
 
 @pytest.fixture(scope='function')
