@@ -11,4 +11,4 @@ class LoginPage(BasePage):
         assert self.is_opened(check_method=self._url_contains)
 
     def find_error(self):
-        return self.find(self.locators.ERROR)
+        return self.find(self.locators.ERROR).text == 'Error'
