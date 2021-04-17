@@ -1,5 +1,4 @@
 import logging
-import time
 
 import allure
 
@@ -22,13 +21,13 @@ class DashboardPage(BasePage):
     locators = DashboardPageLocators()
     url = 'https://target.my.com/dashboard'
 
-    def go_to_segments(self):
+    def go_to_segment_page(self):
         locator = self.format_locator(self.locators.HEAD_MENU_LINK_TEMPLATE, 'Аудитории')
         self.click(locator)
         return SegmentPage(driver=self.driver)
 
-    @allure.step('Create campaign')
-    def create_campaign(self, timeout=10):
+    @allure.step('Go to create campaign page')
+    def go_to_campaign_page(self, timeout=10):
 
         locators = [self.locators.CREATE_FIRST_CAMPAIGN, self.locators.CREATE_CAMPAIGN]
         element_locator = wait(self.check_one_of_clickable, timeout=timeout, interval=0.2, check=True,
@@ -48,11 +47,10 @@ class DashboardPage(BasePage):
 
         return wait(_check, timeout=10, interval=0.2, n=name)
 
-    @allure.step('Select campaign')
-    def select_campaign(self, name):
-        self.click(self.format_locator(self.locators.CAMPAIGN_CHECKBOX, name))
+    def remove_campaign(self, name):
+        with allure.step('Select campaign'):
+            self.click(self.format_locator(self.locators.CAMPAIGN_CHECKBOX, name))
 
-    @allure.step('Remove created campaign')
-    def remove_campaign(self):
-        self.click(self.locators.CAMPAIGN_ACTIONS)
-        self.click(self.locators.CAMPAIGN_REMOVE)
+        with allure.step('Remove created campaign'):
+            self.click(self.locators.CAMPAIGN_ACTIONS)
+            self.click(self.locators.CAMPAIGN_REMOVE)
