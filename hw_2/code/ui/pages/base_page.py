@@ -91,6 +91,12 @@ class BasePage(object):
 
         self.click(self.locators.FORM_SUBMIT)
 
+    def find_wrong_format_error(self):
+        wrong_data_error = self.find(self.locators.FORM_WRONG_DATA_FORMAT)
+        error_text = self.wait_text_changed(wrong_data_error)
+
+        return 'Введите email или телефон' == error_text
+
     def keys_to_input(self, locator, keys):
         inp = self.wait().until(EC.element_to_be_clickable(locator))
         inp.clear()
