@@ -2,7 +2,6 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 
 from ui.pages.base_page import BasePage
-from ui.pages.dashboard_page import DashboardPage
 from ui.pages.login_page import LoginPage
 
 
@@ -23,5 +22,5 @@ class BaseCase:
 
         self.logger.debug('Initial setup done!')
 
-    def get_login_page(self):
+    def go_to_login_page(self):
         return LoginPage(driver=self.driver)
