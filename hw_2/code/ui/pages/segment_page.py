@@ -1,9 +1,7 @@
 import logging
-import time
 
 import allure
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
 
 from ui.locators.pages_locators import SegmentPageLocators
 from ui.pages.base_page import BasePage, ElementNotExistsException
@@ -25,7 +23,13 @@ class SegmentPage(BasePage):
         self.click(self.locators.SEGMENT_LIST_BTN)
 
     @allure.step('Create segment')
-    def create_segment(self, name, source_id, timeout=10):
+    def create_segment(self, time_now, name_prefix='test', timeout=10):
+
+        source_id = self.create_group_source(link='https://vk.com/overhear_mtu')
+
+        segment_name = f'{name_prefix}_{time_now}'
+        self.go_to_segment_list()
+
         locators = [self.locators.CREATE_FIRST_SEGMENT, self.locators.CREATE_SEGMENT]
 
         element_locator = wait(method=self.check_one_of_clickable, locators=locators,
@@ -38,9 +42,11 @@ class SegmentPage(BasePage):
         self.click(self.locators.SEGMENT_ADD_BTN)
 
         # Change segment name
-        self.keys_to_input(locator=self.locators.SEGMENT_INPUT_NAME, keys=name)
+        self.keys_to_input(locator=self.locators.SEGMENT_INPUT_NAME, keys=segment_name)
 
         self.click(self.locators.CREATE_SEGMENT)
+
+        return segment_name
 
     @allure.step('Create source of data (context targeting)')
     def create_group_source(self, link):
