@@ -3,3 +3,4 @@ pytest-xdist
 selenium
 allure-pytest
 webdriver-manager
+Appium-Python-Client
