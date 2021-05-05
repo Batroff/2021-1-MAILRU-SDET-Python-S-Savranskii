@@ -2,12 +2,11 @@ import re
 from sys import argv
 from json import dumps
 
-methods = ['GET', 'POST', 'HEAD', 'PUT', 'DELETE', 'PATCH', 'TRACE', 'CONNECT', 'OPTIONS']
 requests = dict()
 with open('../access.log', 'r') as f:
     for line in f:
-        if re.search(f'\"({"|".join(methods)}).*HTTP', line):
-            method = re.search(f'({"|".join(methods)})', line).group(0)
+        if res := re.search('"[A-Z]+.*HTTP/1.{2}\"', line):
+            method = res.group(0).split(' ')[0][1:]
             requests[method] = requests.get(method, 0) + 1
 
 with open('./res.log', 'w+') as f:

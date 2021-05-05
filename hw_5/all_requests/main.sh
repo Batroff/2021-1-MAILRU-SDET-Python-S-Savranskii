@@ -1,1 +1,1 @@
-cat ../access.log | grep -E 'POST|GET|HEAD|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH' | wc -l > ./res.log
+cat ../access.log | grep -oE '.*HTTP/1.{2}"' | awk '{print $6}' | grep -E '[A-Z]+' | wc -l > ./res.log

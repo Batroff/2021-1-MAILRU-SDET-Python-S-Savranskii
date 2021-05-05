@@ -1,1 +1,1 @@
-cat ../access.log | grep -oE '(POST|GET|HEAD|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH).*HTTP' | grep -oE '/.*[[:space:]]' | sort | uniq -c | sort -nr | head -10 | awk '{printf("%s -- %d\n", $2, $1)}' > ./res.log
+cat ../access.log | grep -oE '.*HTTP/1.{2}"' | awk '{print $7}' | sort | uniq -c | sort -nr | head -10 | awk '{printf("%s -- %d\n", $2, $1)}' > ./res.log
