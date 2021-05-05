@@ -18,3 +18,9 @@ class SettingsPage(BasePage):
         self.swipe_to_element(swipe_method=self.swipe_up, locator=about_menu_btn, max_swipes=5)
         self.click(about_menu_btn)
         return SettingsAboutPage(driver=self.driver)
+
+    def set_feed_source(self, source_name):
+        source_page = self.go_to_source_page()
+
+        source_page.set_source(source_name)
+        assert source_page.is_feed_source_set(source_name)

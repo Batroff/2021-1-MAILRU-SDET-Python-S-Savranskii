@@ -25,6 +25,10 @@ class ChatPage(BasePage):
         self.driver.hide_keyboard()
         self.click(self.locators.CHAT_INPUT_SEND)
 
+    def get_news(self):
+        self.find_in_chat('News')
+        return self.get_player_vesti_fm()
+
     def get_player_vesti_fm(self):
         return self._get_player_name('Вести ФМ')
 

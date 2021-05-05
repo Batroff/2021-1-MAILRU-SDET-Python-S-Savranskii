@@ -28,16 +28,12 @@ class TestFeedSource(BaseCase):
     @pytest.mark.AndroidUI
     def test_set_feed_source(self):
         settings_page = self.main_page.go_to_settings_page()
-        source_page = settings_page.go_to_source_page()
+        settings_page.set_feed_source(source_name='Вести FM')
 
-        source_name = 'Вести FM'
-        source_page.set_feed_source(source_name)
-        assert source_page.is_feed_source_set(source_name)
-        source_page.return_to_main_page()
+        settings_page.press_back_key(count=2)
 
         chat_page = self.main_page.go_to_chat_page()
-        chat_page.find_in_chat('News')
-        assert chat_page.get_player_vesti_fm() == 'Вести ФМ'
+        assert chat_page.get_news() == 'Вести ФМ'
 
 
 class TestSettings(BaseCase):
