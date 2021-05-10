@@ -4,3 +4,6 @@ selenium
 allure-pytest
 webdriver-manager
 Appium-Python-Client
+requests
+SQLAlchemy
+Faker
