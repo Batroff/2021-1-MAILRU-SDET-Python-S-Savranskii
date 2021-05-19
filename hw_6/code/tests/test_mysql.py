@@ -86,12 +86,10 @@ class TestClientError(MySQLBase):
         assert [(x.req_len, x.url) for x in resp] == [
             (1417, '/index.php?option=com_phocagallery&view=category&id=4025&Itemid=53'),
             (1417, '/index.php?option=com_phocagallery&view=category&id=7806&Itemid=53'),
-            (1417, '/index.php?option=com_phocagallery&view=category&id=%28SELECT%20%28CASE%20WHEN%20%289168'
-                   '%3D4696%29%20THEN%209168%20ELSE%209168%2A%28SELECT%209168%20FROM%20INFORMATION_SCHEMA'
-                   '.CHARACTER_SETS%29%20END%29%29&Itemid=53'),
-            (1417, '/index.php?option=com_phocagallery&view=category&id=%28SELECT%20%28CASE%20WHEN%20%281753'
-                   '%3D1753%29%20THEN%201753%20ELSE%201753%2A%28SELECT%201753%20FROM%20INFORMATION_SCHEMA'
-                   '.CHARACTER_SETS%29%20END%29%29&Itemid=53'),
+            (1417, '/index.php?option=com_phocagallery&view=category&id=(SELECT (CASE WHEN (9168=4696) THEN 9168 ELSE '
+                   '9168*(SELECT 9168 FROM INFORMATION_SCHEMA.CHARACTER_SETS) END))&Itemid=53'),
+            (1417, '/index.php?option=com_phocagallery&view=category&id=(SELECT (CASE WHEN (1753=1753) THEN 1753 ELSE '
+                   '1753*(SELECT 1753 FROM INFORMATION_SCHEMA.CHARACTER_SETS) END))&Itemid=53'),
             (1397, '/index.php?option=com_easyblog&view=dashboard&layout=write'),
         ]
 
