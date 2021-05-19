@@ -1,8 +1,4 @@
-/.idea
-/hw_1/.idea
-/hw_2/.idea
-/hw_2/code/tmp
-/hw_3/.idea
-/hw_3/code/tmp
-/hw_4/.idea
-/hw_4/code/tmp
+**/.idea
+*/code/tmp
+hw_5/*/*.log
+venv
