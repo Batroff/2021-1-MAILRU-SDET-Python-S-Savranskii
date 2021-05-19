@@ -1,5 +1,6 @@
 import os
 import re
+import urllib.parse
 
 
 def repo_root():
@@ -42,7 +43,7 @@ def client_error():
             if req := re.search('.*HTTP/1.{4}4[0-9]{2}\\s[0-9]+', line):
                 req_arr = req.group(0).split(' ')
                 code = req_arr[-2]
-                url = req_arr[6]
+                url = urllib.parse.unquote(req_arr[6])
                 ip = req_arr[0]
                 req_len = req_arr[-1]
                 res.append((ip, url, req_len, code))
