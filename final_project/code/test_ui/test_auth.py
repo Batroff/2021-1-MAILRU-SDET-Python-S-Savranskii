@@ -1,3 +1,6 @@
+import random
+
+import pytest
 from faker import Faker
 
 from test_ui.base import BaseCase
@@ -14,14 +17,19 @@ class TestAuthUsername(BaseCase):
      - на неправильный логин
     """
 
-    def test_username_length_negative(self):
-        username = fake.lexify('????')
-        password = fake.bothify('#?#?#?#?')
-
-        self.auth_page.login(login=username, password=password, get_home_page=False)
+    @pytest.mark.parametrize('user_data', [
+        {
+            'username': fake.lexify('?' * i),
+            'password': fake.password()
+        } for i in [random.randint(1, 6), random.randint(17, 200)]
+    ])
+    @pytest.mark.UI
+    def test_login_len_negative(self, user_data):
+        self.auth_page.login(login=user_data['username'], password=user_data['password'], get_home_page=False)
 
         assert self.auth_page.is_login_error_exists('Incorrect username length')
 
+    @pytest.mark.UI
     def test_correct_login(self):
         user_with_access = self.mysql_builder.create_user()
         username, password = user_with_access.username, user_with_access.password
@@ -30,6 +38,7 @@ class TestAuthUsername(BaseCase):
 
         assert home_page.is_opened()
 
+    @pytest.mark.UI
     def test_login_without_access(self):
         user_without_access = self.mysql_builder.create_user(access=0)
         username, password = user_without_access.username, user_without_access.password
@@ -38,6 +47,7 @@ class TestAuthUsername(BaseCase):
 
         assert self.auth_page.is_login_error_exists('Ваша учетная запись заблокирована')
 
+    @pytest.mark.UI
     def test_wrong_data_login(self):
         username = fake.lexify('??????')
         password = fake.bothify('#?#?#?#?')

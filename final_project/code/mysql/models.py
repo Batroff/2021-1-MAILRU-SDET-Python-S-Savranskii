@@ -1,5 +1,3 @@
-import datetime
-
 from sqlalchemy import Column, Integer, String, SmallInteger, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 

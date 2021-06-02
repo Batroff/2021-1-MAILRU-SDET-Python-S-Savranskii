@@ -1,14 +1,11 @@
 import logging
-import os
 import shutil
-
-import allure
 
 from mysql.client import MysqlClient
 from ui.fixtures import *
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def mysql_client():
     mysql_client = MysqlClient(user='test_qa', password='qa_test', db_name='test_db')
     mysql_client.connect()

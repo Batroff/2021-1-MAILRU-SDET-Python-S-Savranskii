@@ -5,7 +5,6 @@ from selenium import webdriver
 from mysql.builder import MySQLBuilder
 from mysql.client import MysqlClient
 from ui.pages.auth_page import AuthPage
-from ui.pages.base_page import BasePage
 
 
 class BaseCase:
@@ -23,3 +22,8 @@ class BaseCase:
         self.mysql_builder = MySQLBuilder(self.mysql)
 
         self.auth_page: AuthPage = request.getfixturevalue('auth_page')
+
+        self.prepare()
+
+    def prepare(self):
+        pass

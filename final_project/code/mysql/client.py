@@ -12,7 +12,7 @@ class MysqlClient:
         self.password = password
         self.db_name = db_name
 
-        self.host = '127.0.0.1' 
+        self.host = '127.0.0.1'
         self.port = 3306
 
         self.engine = None
@@ -46,3 +46,9 @@ class MysqlClient:
     def create_table(self, name):
         if not inspect(self.engine).has_table(name):
             Base.metadata.tables[name].create(self.engine)
+
+    def select_user_by_name(self, name):
+        return self.execute_query(f'SELECT * FROM test_users WHERE username=\'{name}\';')
+
+    def select_user_by_email(self, email):
+        return self.execute_query(f'SELECT * FROM test_users WHERE email=\'{email}\';')

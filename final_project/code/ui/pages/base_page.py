@@ -77,10 +77,10 @@ class BasePage(object):
                 if i == self.CLICK_RETRY - 1:
                     raise
 
-    # def keys_to_input(self, locator, keys):
-    #     inp = self.wait().until(EC.element_to_be_clickable(locator))
-    #     inp.clear()
-    #     inp.send_keys(keys)
+    def keys_to_input(self, locator, keys):
+        inp = self.wait().until(EC.element_to_be_clickable(locator))
+        inp.clear()
+        inp.send_keys(keys)
 
     def element_exists(self, locator) -> bool:
         return len(self.driver.find_elements(*locator)) != 0
