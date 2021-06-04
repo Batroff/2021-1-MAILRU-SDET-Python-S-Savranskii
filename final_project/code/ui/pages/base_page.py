@@ -23,7 +23,7 @@ class ElementNotExistsException(Exception):
     pass
 
 
-logger = logging.getLogger('test')
+logger = logging.getLogger('pytest')
 
 
 class BasePage(object):

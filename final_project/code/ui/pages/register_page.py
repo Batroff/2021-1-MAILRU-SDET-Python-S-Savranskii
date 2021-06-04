@@ -1,3 +1,5 @@
+import requests
+
 from ui.locators.pages_locators import RegisterPageLocators
 from ui.pages.base_page import BasePage
 from ui.pages.home_page import HomePage
@@ -6,7 +8,7 @@ from utils.decorators import wait
 
 class RegisterPage(BasePage):
     locators = RegisterPageLocators()
-    url = 'http://localhost:8080/reg'
+    url = 'http://test_app:8081/reg'
 
     def register(self, username, email, password, confirm_password, checkbox, get_home_page=True):
         self.keys_to_input(self.locators.USERNAME_INPUT, username)
@@ -19,6 +21,8 @@ class RegisterPage(BasePage):
 
         self.click(self.locators.SUBMIT_BTN)
 
+        # requests.post(url=f'http://vk_mock/vk_id/{username}')
+        #
         if get_home_page:
             return HomePage(driver=self.driver)
 

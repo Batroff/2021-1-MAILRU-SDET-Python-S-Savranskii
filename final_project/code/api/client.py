@@ -3,7 +3,7 @@ import requests
 
 from urllib.parse import urljoin
 
-logger = logging.getLogger('test')
+logger = logging.getLogger('pytest')
 
 
 class ResponseStatusCodeException(Exception):

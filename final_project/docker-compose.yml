@@ -10,16 +10,33 @@ services:
       MYSQL_ROOT_PASSWORD: root
     healthcheck:
       test: ['CMD', 'mysqladmin', '-utest_qa', '-pqa_test', 'ping', '-h', '127.0.0.1']
-      timeout: 2s
+      interval: 3s
       retries: 30
 
   test_app:
     image: myapp
-    command: /app/myapp --config=/app/app-config # --setup
+    command: bash -c '/app/wait_for_mock.sh; /app/myapp --config=/app/app-config' # --setup
     ports:
-      - "8080:8080"
+      - "8081:8081"
     volumes:
+      - ./init/wait_for_mock.sh:/app/wait_for_mock.sh
       - ./init/app-config:/app/app-config
     depends_on:
       mysql:
         condition: service_healthy
+
+  vk_mock:
+    image: vk_mock
+    build:
+      context: ./mock
+    ports:
+      - "8090:8090"
+    environment:
+      MOCK_HOST: '0.0.0.0'
+      MOCK_PORT: '8090'
+
+# docker network create testing_network; docker network connect testing_network <container-selenoid>
+networks:
+  default:
+    external: true
+    name: testing_network

@@ -9,7 +9,7 @@ from utils.decorators import wait
 
 class AuthPage(BasePage):
     locators = AuthPageLocators()
-    url = 'http://localhost:8080/' or 'http://localhost:8080/login'
+    url = 'http://test_app:8081/' or 'http://test_app:8081/login'
 
     @allure.step('Login in...')
     def login(self, login, password, get_home_page=True):

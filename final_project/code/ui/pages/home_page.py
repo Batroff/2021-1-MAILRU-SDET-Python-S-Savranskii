@@ -4,5 +4,5 @@ from ui.pages.base_page import BasePage
 
 class HomePage(BasePage):
 
-    url = 'http://localhost:8080/welcome/'
+    url = 'http://test_app:8081/welcome/'
     locators = HomePageLocators()

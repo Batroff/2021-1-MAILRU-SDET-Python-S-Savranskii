@@ -2,6 +2,7 @@ import os
 
 import allure
 import pytest
+from _pytest.config import Config
 
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
@@ -24,9 +25,9 @@ def auth_page(driver) -> AuthPage:
 
 @pytest.fixture(scope='function')
 def driver(config, test_dir):
-    url = config['url']
+    url = f'http://test_app:{config["APP_PORT"]}'
 
-    browser = get_driver(download_dir=test_dir)
+    browser = get_driver(config=config, download_dir=test_dir)
 
     browser.get(url)
     browser.maximize_window()
@@ -36,11 +37,26 @@ def driver(config, test_dir):
     browser.quit()
 
 
-def get_driver(download_dir):
+def get_driver(config, download_dir):
     options = ChromeOptions()
     options.add_experimental_option("prefs", {"download.default_directory": download_dir})
-    manager = ChromeDriverManager(version='latest')
-    browser = webdriver.Chrome(executable_path=manager.install(), options=options)
+
+    if config['selenoid']:
+        caps = {
+            'browserName': 'chrome',
+            'browserVersion': '91.0_vnc',
+            "selenoid:option": {
+                "enableVNC": True,
+            },
+            "additionalNetworks": ["testing_network"]
+        }
+        browser = webdriver.Remote(command_executor=config['selenoid'],
+                                   options=options,
+                                   desired_capabilities=caps)
+    else:
+        manager = ChromeDriverManager(version='latest')
+        browser = webdriver.Chrome(executable_path=manager.install(),
+                                   options=options)
 
     return browser
 
