@@ -1,7 +1,10 @@
 import logging
+import os
 
 import allure
+from selenium import webdriver
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.remote.webelement import WebElement
 
 from ui.locators.pages_locators import BasePageLocators
@@ -32,9 +35,11 @@ class BasePage(object):
 
     locators = BasePageLocators()
     url = None
+    host = 'test_app'
+    port = os.environ.get('APP_PORT', '8081')
 
     def __init__(self, driver):
-        self.driver = driver
+        self.driver: webdriver = driver
         logger.info(f'{self.__class__.__name__} page is opening...')
         assert self.is_opened(self._url_equals)
 
@@ -44,20 +49,14 @@ class BasePage(object):
         return wait(check_method, error=PageNotLoadedException, check=True, timeout=self.DEFAULT_TIMEOUT, interval=0.2)
 
     def _url_equals(self):
-        if self.driver.current_url != self.url:
+        if self.driver.current_url not in self.url:
             raise PageNotLoadedException(
                 f'{self.url} did not opened in {self.DEFAULT_TIMEOUT} for {self.__class__.__name__}.\n'
-                f'Current url: {self.driver.current_url}.')
-        return True
-
-    def _url_contains(self):
-        if self.url not in self.driver.current_url:
-            raise PageNotLoadedException(
-                f'{self.url} did not opened in {self.DEFAULT_TIMEOUT} for {self.__class__.__name__}.\n'
-                f'Current url: {self.driver.current_url}.')
+                f'Current url: "{self.driver.current_url}".')
         return True
 
     def find(self, locator, timeout=None) -> WebElement:
+        logger.info(f'Finding element "{locator}"...')
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
 
     def wait(self, timeout=None):
@@ -66,6 +65,7 @@ class BasePage(object):
 
         return WebDriverWait(self.driver, timeout)
 
+    @allure.step('Click on {locator}')
     def click(self, locator, timeout=None):
         for i in range(self.CLICK_RETRY):
             logger.info(f'Clicking on {locator}. Try {i+1} of {self.CLICK_RETRY}...')
@@ -78,6 +78,7 @@ class BasePage(object):
                     raise
 
     def keys_to_input(self, locator, keys):
+        logger.info(f'Sending keys "{keys}" to {locator}')
         inp = self.wait().until(EC.element_to_be_clickable(locator))
         inp.clear()
         inp.send_keys(keys)
@@ -91,18 +92,21 @@ class BasePage(object):
 
     @allure.step('Refresh page')
     def refresh_page(self):
+        logger.info(f'Refreshing page "{self.driver.current_url}"')
         self.driver.refresh()
 
     @allure.step('Upload file')
     def upload_file(self, locator, file):
+        logger.info(f'Uploading file "{file}" to "{locator}"')
         self.find(locator).send_keys(file)
 
-    # def check_one_of_clickable(self, locators):
-    #     for locator in locators:
-    #         if self.element_exists(locator):
-    #             if self.find(locator).is_displayed():
-    #                 return locator
-    #
-    #     raise ElementNotExistsException(
-    #         f'Create button hadn\'t been found for {self.__class__.__name__}.'
-    #     )
+    @property
+    def action_chains(self):
+        return ActionChains(self.driver)
+
+    def wait_text_in_element(self, locator, text, timeout=None):
+        if timeout is None:
+            timeout = self.DEFAULT_TIMEOUT
+
+        return self.wait(timeout=timeout) \
+            .until(EC.text_to_be_present_in_element(locator=locator, text_=text))

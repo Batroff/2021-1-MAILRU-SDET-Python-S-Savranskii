@@ -1,4 +1,5 @@
 import logging
+import socket
 import requests
 
 from urllib.parse import urljoin
@@ -50,9 +51,10 @@ class ApiClient:
 
     @staticmethod
     def _log_pre_request(method, url, headers, data, files, cookies, expected_status, allow_redirects):
-        logger.info(f'{method} request for {url}.\n'
-                    f'\tExpected status code = {expected_status}, allow redirects = {allow_redirects}.\n'
-                    f'\theaders = {headers}.\n'
-                    f'\tdata = {data}.\n'
-                    f'\tcookies = {cookies}.\n'
-                    f'\tfiles = {files}.\n')
+        ip = socket.gethostbyname(socket.gethostname())
+        logger.info(f'{ip} -- {method} request for {url}\n'
+                    f'\tExpected status code = {expected_status}, allow redirects = {allow_redirects}\n'
+                    f'\theaders = {headers}\n'
+                    f'\tdata = {data}\n'
+                    f'\tcookies = {cookies}\n'
+                    f'\tfiles = {files}\n')

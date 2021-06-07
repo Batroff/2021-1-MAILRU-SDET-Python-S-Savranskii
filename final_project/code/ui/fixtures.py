@@ -2,7 +2,6 @@ import os
 
 import allure
 import pytest
-from _pytest.config import Config
 
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
@@ -11,20 +10,29 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from ui.pages.auth_page import AuthPage
 from ui.pages.base_page import BasePage
+from ui.pages.home_page import HomePage
 
 
+@allure.title('Initialize BasePage')
 @pytest.fixture
 def base_page(driver) -> BasePage:
     return BasePage(driver=driver)
 
 
+@allure.title('Initialize AuthPage')
 @pytest.fixture
 def auth_page(driver) -> AuthPage:
     return AuthPage(driver=driver)
 
 
+@allure.title('Initialize HomePage')
+@pytest.fixture
+def home_page(driver) -> HomePage:
+    return HomePage(driver=driver)
+
+
 @pytest.fixture(scope='function')
-def driver(config, test_dir):
+def driver(config, test_dir) -> webdriver:
     url = f'http://test_app:{config["APP_PORT"]}'
 
     browser = get_driver(config=config, download_dir=test_dir)
@@ -45,7 +53,7 @@ def get_driver(config, download_dir):
         caps = {
             'browserName': 'chrome',
             'browserVersion': '91.0_vnc',
-            "selenoid:option": {
+            "selenoid:options": {
                 "enableVNC": True,
             },
             "additionalNetworks": ["testing_network"]

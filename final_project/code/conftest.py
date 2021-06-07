@@ -2,37 +2,55 @@ import logging
 import shutil
 from typing import Dict
 
+from api.app_client import AppApiClient
+from api.vk_client import VkApiClient
 from mysql.client import MysqlClient
 from ui.fixtures import *
 from utils.parser import parse_config
 
 
 @pytest.fixture(scope='function')
-def mysql_client():
-    mysql_client = MysqlClient(user='test_qa', password='qa_test', db_name='test_db')
+def mysql_client(config) -> MysqlClient:
+    mysql_client = MysqlClient(user=config['MYSQL_USER'],
+                               password=config['MYSQL_PASSWORD'],
+                               db_name=config['MYSQL_DB'])
     mysql_client.connect()
     yield mysql_client
     mysql_client.connection.close()
 
 
+@pytest.fixture
+def app_api_client(config) -> AppApiClient:
+    return AppApiClient(f'http://localhost:{config["APP_PORT"]}/')  # test_app
+
+
+@pytest.fixture
+def vk_api_client(config) -> VkApiClient:
+    port = config["VK_URL"].split(':')[-1]
+    return VkApiClient(base_url=f'http://localhost:{port}/')
+
+
 def pytest_addoption(parser):
     parser.addoption('--config', default='/app/app-config')
-    parser.addoption('--selenoid', action='store_true', default=True)
+    parser.addoption('--selenoid', action='store_true')
     parser.addoption('--debug_log', action='store_true')
 
 
 def pytest_configure(config):
     base_test_dir = os.path.join('/tmp', 'tests')
 
+    # Parse config file
+    settings = parse_config(filepath=config.getoption('--config'))
+    config.settings = settings
+
+    for s in settings:
+        os.environ[s] = settings[s]
+
     if not hasattr(config, 'workerinput'):
         # Recreate test directories
         if os.path.exists(base_test_dir):
             shutil.rmtree(base_test_dir)
         os.makedirs(base_test_dir)
-
-        # Parse config file
-        settings = parse_config(filepath=config.getoption('--config'))
-        config.settings = settings
 
         # Recreate <name> database
         mysql_client = MysqlClient(user=settings['MYSQL_USER'],

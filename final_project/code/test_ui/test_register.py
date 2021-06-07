@@ -9,17 +9,17 @@ from re import sub
 fake = Faker()
 
 
-class TestRegister(BaseCase):
+class TestRegisterPage(BaseCase):
     """
-    Тесты:
-     - длина логина len < 6 || len > 16
-     - длина почты > 64
-     - длина пароля len > 255
-     - несовпадающие пароли
-     - одинаковые (логины, почты, пароли) у разных пользователей
-     - чекбокс
-     - неправильный email
-     - корректная регистрация
+    **Тесты:**
+     * длина логина len < 6 || len > 16
+     * длина почты > 64
+     * длина пароля len > 255
+     * несовпадающие пароли
+     * одинаковые (логины, почты, пароли) у разных пользователей
+     * чекбокс
+     * неправильный email
+     * корректная регистрация
     """
 
     def prepare(self):
@@ -60,10 +60,10 @@ class TestRegister(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql.select_user_by_name(user['username'])
+        query_users = self.mysql_client.select_user_by_name(user['username'])
         assert len(query_users) == 0
 
-        assert self.register_page.is_reg_error_exists(expected_err)
+        assert self.register_page.is_error_exists(expected_err)
 
     @pytest.mark.UI
     def test_different_confirm_password(self):
@@ -78,10 +78,10 @@ class TestRegister(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql.select_user_by_name(user['username'])
+        query_users = self.mysql_client.select_user_by_name(user['username'])
         assert len(query_users) == 0
 
-        assert self.register_page.is_reg_error_exists('Passwords must match')
+        assert self.register_page.is_error_exists('Passwords must match')
 
     @pytest.mark.UI
     @pytest.mark.BUG
@@ -95,7 +95,7 @@ class TestRegister(BaseCase):
                                     confirm_password=user.password,
                                     checkbox=True)
 
-        query_users = self.mysql.select_user_by_name(new_user['username'])
+        query_users = self.mysql_client.select_user_by_name(new_user['username'])
         assert len(query_users) == 1
 
     @pytest.mark.UI
@@ -110,10 +110,10 @@ class TestRegister(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql.select_user_by_name(user.username)
+        query_users = self.mysql_client.select_user_by_name(user.username)
         assert len(query_users) == 1, f"Expected 1 user in db with username '{user.username}'"
 
-        assert self.auth_page.is_login_error_exists('User already exist')
+        assert self.register_page.is_error_exists('User already exist')
 
     @pytest.mark.UI
     @pytest.mark.BUG
@@ -128,10 +128,10 @@ class TestRegister(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql.select_user_by_email(user.email)
+        query_users = self.mysql_client.select_user_by_email(user.email)
         assert len(query_users) == 1, f"Expected 1 user in db with email '{user.email}'"
 
-        assert self.auth_page.is_login_error_exists('User already exist')
+        assert self.register_page.is_error_exists('User already exist')
 
     @pytest.mark.parametrize("email,expected_err", [
         (sub(r'\..*', '.', fake.email()), "Invalid email address"),
@@ -157,10 +157,10 @@ class TestRegister(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql.select_user_by_email(email)
+        query_users = self.mysql_client.select_user_by_email(email)
         assert len(query_users) == 0, f"Expected 0 users in db with email '{email}'"
 
-        assert self.auth_page.is_login_error_exists(expected_err), f"Expected error '{expected_err}'"
+        assert self.register_page.is_error_exists(expected_err), f"Expected error '{expected_err}'"
 
     @pytest.mark.UI
     @pytest.mark.BUG
@@ -174,7 +174,7 @@ class TestRegister(BaseCase):
                                     checkbox=True)
 
         username = user['username']
-        query_users = self.mysql.select_user_by_name(username)
+        query_users = self.mysql_client.select_user_by_name(username)
         assert len(query_users) == 1, f"Expected 1 user in db with username '{username}'"
 
         user = query_users[0]

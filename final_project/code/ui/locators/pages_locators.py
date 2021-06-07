@@ -10,13 +10,9 @@ class AuthPageLocators(BasePageLocators):
     PASSWORD_INPUT = (By.ID, 'password')
     SUBMIT_BTN = (By.ID, 'submit')
 
-    LOGIN_ERROR_TEMPLATE = (By.XPATH, '//div[@id="flash" and text()="{0}"]')
+    LOGIN_ERROR = (By.ID, 'flash')
 
     REGISTER_PAGE = (By.CSS_SELECTOR, 'a[href="/reg"]')
-
-
-class HomePageLocators(BasePageLocators):
-    pass
 
 
 class RegisterPageLocators(AuthPageLocators):
@@ -24,4 +20,15 @@ class RegisterPageLocators(AuthPageLocators):
     PASSWORD_CONFIRM_INPUT = (By.ID, 'confirm')
     CHECKBOX_INPUT = (By.ID, 'term')
 
-    REGISTER_ERROR_TEMPLATE = AuthPageLocators.LOGIN_ERROR_TEMPLATE
+    REGISTER_ERROR = AuthPageLocators.LOGIN_ERROR
+
+
+class MenuLocators(BasePageLocators):
+    MENU_LINK_TEMPLATE = (By.XPATH, '//a[text()="{0}"]')
+    MENU_USERNAME = (By.XPATH, '//div[@id="login-name"]//li[contains(text(), "Logged as")]')
+    MENU_VK_ID = (By.XPATH, '//div[@id="login-name"]//li[contains(text(), "VK ID:")]')
+    MENU_LOGOUT = (By.XPATH, '//a[text()="Logout"]')
+
+
+class HomePageLocators(MenuLocators):
+    IMAGE_LINK_BY_TITLE_TEMPLATE = (By.XPATH, '//div[div[text()="{0}"]]')

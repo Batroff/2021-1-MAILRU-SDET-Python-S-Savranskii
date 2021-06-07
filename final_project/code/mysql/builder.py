@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from faker import Faker
 
@@ -46,6 +47,8 @@ class MySQLBuilder:
             active=active,
             start_active_time=start_active_time,
         )
+        logging.info(f'User {user} inserted in database')
+
         self.client.session.add(user)
         self.client.session.commit()
 

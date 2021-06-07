@@ -35,7 +35,7 @@ def get_vk_id(username):
         mysql.connection.close()
 
         if len(query) == 1:
-            users[username] = random.randint(1000, 10000)
+            users[username] = str(random.randint(1000, 10000))
             response.response = json.dumps({'vk_id': users[username]})
             response.status_code = 200
 
