@@ -9,7 +9,7 @@ from ui.fixtures import *
 from utils.parser import parse_config
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def mysql_client(config) -> MysqlClient:
     mysql_client = MysqlClient(user=config['MYSQL_USER'],
                                password=config['MYSQL_PASSWORD'],

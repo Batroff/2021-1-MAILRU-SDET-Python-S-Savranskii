@@ -1,8 +1,12 @@
+import logging
+
 import sqlalchemy
 from sqlalchemy import inspect
 from sqlalchemy.orm import sessionmaker
 
 from mysql.models import Base
+
+logger = logging.getLogger('pytest')
 
 
 class MysqlClient:
@@ -27,10 +31,7 @@ class MysqlClient:
             encoding='utf8'
         )
         self.connection = self.engine.connect()
-        self.session = sessionmaker(bind=self.connection.engine,
-                                    autocommit=False,  # use autocommit on session.add
-                                    expire_on_commit=False  # expire model after commit (requests data from database)
-                                    )()
+        self.session = sessionmaker(bind=self.connection.engine)()
 
     def execute_query(self, query, fetch=True):
         res = self.connection.execute(query)
@@ -46,9 +47,3 @@ class MysqlClient:
     def create_table(self, name):
         if not inspect(self.engine).has_table(name):
             Base.metadata.tables[name].create(self.engine)
-
-    def select_user_by_name(self, name):
-        return self.execute_query(f'SELECT * FROM test_users WHERE username=\'{name}\';')
-
-    def select_user_by_email(self, email):
-        return self.execute_query(f'SELECT * FROM test_users WHERE email=\'{email}\';')

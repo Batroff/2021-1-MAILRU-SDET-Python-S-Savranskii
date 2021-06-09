@@ -33,9 +33,9 @@ class ApiClient:
                                         allow_redirects=allow_redirects)
         self._log_post_request(url, response)
 
-        if response.status_code not in expected_status:
-            raise ResponseStatusCodeException(f'Got {response.status_code} {response.reason} for URL "{url}"!\n'
-                                              f'Expected status_code: {expected_status}.')
+        assert response.status_code in expected_status, \
+            ResponseStatusCodeException(f'Got {response.status_code} {response.reason} for URL "{url}"! '
+                                        f'Expected status codes: {" ".join(map(lambda x: str(x), expected_status))}.')
 
         if jsonify:
             return response.json()
@@ -44,10 +44,11 @@ class ApiClient:
 
     @staticmethod
     def _log_post_request(url, response):
-        logger.info(f'Response from {url}: \n'
+        logger.info(f'Response from {url}\n'
                     f'\tcode: {response.status_code}\n'
                     f'\theaders: {response.headers}\n'
-                    f'\tcookies: {response.cookies}\n')
+                    f'\tcookies: {response.cookies}\n'
+                    f'\ttext: {response.text}\n\n')
 
     @staticmethod
     def _log_pre_request(method, url, headers, data, files, cookies, expected_status, allow_redirects):
@@ -57,4 +58,4 @@ class ApiClient:
                     f'\theaders = {headers}\n'
                     f'\tdata = {data}\n'
                     f'\tcookies = {cookies}\n'
-                    f'\tfiles = {files}\n')
+                    f'\tfiles = {files}\n\n')

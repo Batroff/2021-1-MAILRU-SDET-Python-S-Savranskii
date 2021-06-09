@@ -1,9 +1,10 @@
-import requests
+import os
+import random
 
+from api.vk_client import VkApiClient
 from ui.locators.pages_locators import RegisterPageLocators
 from ui.pages.base_page import BasePage
 from ui.pages.home_page import HomePage
-from utils.decorators import wait
 
 
 class RegisterPage(BasePage):

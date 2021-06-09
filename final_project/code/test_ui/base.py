@@ -1,4 +1,5 @@
 import os
+import random
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -15,7 +16,7 @@ class BaseCase:
     authorize = None
 
     @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, logger, request: FixtureRequest):
+    def setup(self, driver, config, logger, request: FixtureRequest, ui_report):
 
         self.driver = driver
         self.config = config
@@ -32,6 +33,9 @@ class BaseCase:
             user = self.mysql_builder.create_user()
             os.environ['USER_USERNAME'] = user.username
             os.environ['USER_PASSWORD'] = user.password
+
+            vk_id = str(random.randint(1000, 10000))
+            self.vk_api_client.add_vk_id(username=user.username, vk_id=vk_id)
 
             self.home_page: HomePage = self.auth_page.login(username=user.username, password=user.password)
 

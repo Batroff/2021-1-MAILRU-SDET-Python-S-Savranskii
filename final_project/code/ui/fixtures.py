@@ -45,9 +45,10 @@ def driver(config, test_dir) -> webdriver:
     browser.quit()
 
 
-def get_driver(config, download_dir):
+def get_driver(config, download_dir=None):
     options = ChromeOptions()
-    options.add_experimental_option("prefs", {"download.default_directory": download_dir})
+    if download_dir:
+        options.add_experimental_option("prefs", {"download.default_directory": download_dir})
 
     if config['selenoid']:
         caps = {
@@ -69,7 +70,7 @@ def get_driver(config, download_dir):
     return browser
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope='function')
 def ui_report(driver, request, test_dir):
     failed_tests_count = request.session.testsfailed
     yield

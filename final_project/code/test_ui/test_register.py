@@ -2,6 +2,7 @@ import random
 
 import pytest
 
+from mysql.models import User
 from test_ui.base import BaseCase
 from faker import Faker
 from re import sub
@@ -36,8 +37,8 @@ class TestRegisterPage(BaseCase):
     @pytest.mark.parametrize("invalid_user,expected_err", [
         ({"username": fake.lexify('?' * 5)}, "Incorrect username length"),
         ({"username": fake.lexify('?' * 20)}, "Incorrect username length"),
-        ({"email": fake.lexify('?' * 64) + '@test.ru'}, "Incorrect email length"),
         ({"email": f"{fake.lexify('?')}@{fake.lexify('?')}.{fake.lexify('?')}"}, "Incorrect email length"),
+        ({"email": fake.lexify('?' * 64) + '@test.ru'}, "Incorrect email length"),
         pytest.param({"password": fake.password(length=256)}, "Incorrect password length", marks=pytest.mark.BUG)
     ], ids=[
         "username_short",
@@ -60,8 +61,8 @@ class TestRegisterPage(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql_client.select_user_by_name(user['username'])
-        assert len(query_users) == 0
+        query = self.mysql_builder.select_user(username=user['username'])
+        assert query is None
 
         assert self.register_page.is_error_exists(expected_err)
 
@@ -78,25 +79,10 @@ class TestRegisterPage(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql_client.select_user_by_name(user['username'])
-        assert len(query_users) == 0
+        query = self.mysql_builder.select_user(username=user['username'])
+        assert query is None
 
         assert self.register_page.is_error_exists('Passwords must match')
-
-    @pytest.mark.UI
-    @pytest.mark.BUG
-    def test_create_user_with_existing_password(self):
-        user = self.mysql_builder.create_user()
-
-        new_user = self.generate_user()
-        self.register_page.register(username=new_user['username'],
-                                    email=new_user['email'],
-                                    password=user.password,
-                                    confirm_password=user.password,
-                                    checkbox=True)
-
-        query_users = self.mysql_client.select_user_by_name(new_user['username'])
-        assert len(query_users) == 1
 
     @pytest.mark.UI
     def test_create_user_with_existing_name(self):
@@ -110,8 +96,8 @@ class TestRegisterPage(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql_client.select_user_by_name(user.username)
-        assert len(query_users) == 1, f"Expected 1 user in db with username '{user.username}'"
+        query = self.mysql_builder.select_user(username=user.username)
+        assert isinstance(query, User), f"Expected 1 user in db with username '{user.username}'"
 
         assert self.register_page.is_error_exists('User already exist')
 
@@ -128,8 +114,8 @@ class TestRegisterPage(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql_client.select_user_by_email(user.email)
-        assert len(query_users) == 1, f"Expected 1 user in db with email '{user.email}'"
+        query = self.mysql_builder.select_user(email=user.email)
+        assert isinstance(query, User), f"Expected 1 user in db with email '{user.email}'"
 
         assert self.register_page.is_error_exists('User already exist')
 
@@ -157,8 +143,8 @@ class TestRegisterPage(BaseCase):
                                     checkbox=True,
                                     get_home_page=False)
 
-        query_users = self.mysql_client.select_user_by_email(email)
-        assert len(query_users) == 0, f"Expected 0 users in db with email '{email}'"
+        query = self.mysql_builder.select_user(email=email)
+        assert query is None, f"Expected 0 users in db with email '{email}'"
 
         assert self.register_page.is_error_exists(expected_err), f"Expected error '{expected_err}'"
 
@@ -166,19 +152,17 @@ class TestRegisterPage(BaseCase):
     @pytest.mark.BUG
     def test_create_user_correct(self):
         user = self.generate_user()
+        username = user['username']
 
-        self.register_page.register(username=user['username'],
+        self.register_page.register(username=username,
                                     email=user['email'],
                                     password=user['password'],
                                     confirm_password=user['password'],
                                     checkbox=True)
 
-        username = user['username']
-        query_users = self.mysql_client.select_user_by_name(username)
-        assert len(query_users) == 1, f"Expected 1 user in db with username '{username}'"
+        query = self.mysql_builder.select_user(username=username)
+        assert isinstance(query, User), f"Expected 1 user in db with username '{username}'"
 
-        user = query_users[0]
-        access, active, start_time = user[-3], user[-2], user[-1]
-        assert access == 1, f"Expected 'access' in state 1"
-        assert active == 1, f"Expected 'active' in state 1"
-        assert start_time is not None, f"Expected 'start_active_time' not NULL"
+        assert query.access == 1, f"Expected 'access' in state 1"
+        assert query.active == 1, f"Expected 'active' in state 1"
+        assert query.start_time is not None, f"Expected 'start_active_time' not NULL"

@@ -6,7 +6,7 @@ RUN apk update \
 ADD requirements.txt .
 RUN pip install -r requirements.txt
 
-ADD vk/*.py /vk/
+ADD app.py /vk/
 WORKDIR /vk/
 
 CMD python3.8 app.py

@@ -27,16 +27,13 @@ class TestHomePageMenu(BaseCase):
 
     authorize = True
 
-
-
     def test_logout_button(self):
         self.home_page.logout()
 
         username = os.environ.get('USER_USERNAME')
-        user = self.mysql_client.select_user_by_name(username)[0]
-        active = user[-2]
+        user = self.mysql_builder.select_user(username=username)
 
-        assert active == 0
+        assert user.active == 0
         assert self.auth_page.is_opened()
 
     def test_logged_name(self):
@@ -100,11 +97,9 @@ class TestHomePageBody(BaseCase):
     authorize = True
 
     @pytest.mark.parametrize("link_name,expected_url", [
-        pytest.param(
-            ('What is an API?',
-             'https://en.wikipedia.org/wiki/API'),
-            marks=pytest.mark.UNSTABLE
-        ),
+        pytest.param('What is an API?',
+                     'https://en.wikipedia.org/wiki/API',
+                     marks=pytest.mark.UNSTABLE),
         ('Future of internet',
          'https://www.popularmechanics.com/technology/infrastructure/a29666802/future-of-the-internet/'),
         ('Lets talk about SMTP?',

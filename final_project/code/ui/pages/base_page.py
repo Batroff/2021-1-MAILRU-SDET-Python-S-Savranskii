@@ -51,8 +51,8 @@ class BasePage(object):
     def _url_equals(self):
         if self.driver.current_url not in self.url:
             raise PageNotLoadedException(
-                f'{self.url} did not opened in {self.DEFAULT_TIMEOUT} for {self.__class__.__name__}.\n'
-                f'Current url: "{self.driver.current_url}".')
+                f'{self.url} did not opened in {self.DEFAULT_TIMEOUT} for {self.__class__.__name__}, '
+                f'current url: {self.driver.current_url}')
         return True
 
     def find(self, locator, timeout=None) -> WebElement:
