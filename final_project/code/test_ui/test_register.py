@@ -1,5 +1,6 @@
 import random
 
+import allure
 import pytest
 
 from mysql.models import User
@@ -48,6 +49,7 @@ class TestRegisterPage(BaseCase):
         "password_long"
     ])
     @pytest.mark.UI
+    @allure.description("Must validate incorrect length input; Insert into database is not expecting")
     def test_input_data_len_negative(self, invalid_user, expected_err):
         user = self.generate_user()
         username = invalid_user.get("username", user['username'])
@@ -67,6 +69,7 @@ class TestRegisterPage(BaseCase):
         assert self.register_page.is_error_exists(expected_err)
 
     @pytest.mark.UI
+    @allure.description("Password and confirm password inputs must match; Insert into database is not expecting")
     def test_different_confirm_password(self):
         user = self.generate_user()
         password = fake.password(length=5)
@@ -85,6 +88,7 @@ class TestRegisterPage(BaseCase):
         assert self.register_page.is_error_exists('Passwords must match')
 
     @pytest.mark.UI
+    @allure.description("Username must be unique; Insert into database is not expecting")
     def test_create_user_with_existing_name(self):
         user = self.mysql_builder.create_user()
 
@@ -103,6 +107,7 @@ class TestRegisterPage(BaseCase):
 
     @pytest.mark.UI
     @pytest.mark.BUG
+    @allure.description("Email must be unique; Insert into database is not expecting")
     def test_create_user_with_existing_email(self):
         user = self.mysql_builder.create_user()
 
@@ -133,6 +138,7 @@ class TestRegisterPage(BaseCase):
         "Without 'at' symbol"
     ])
     @pytest.mark.UI
+    @allure.description("Email input validating check; Insert into database is not expecting")
     def test_create_user_incorrect_email(self, email, expected_err):
         user = self.generate_user()
 
@@ -150,6 +156,7 @@ class TestRegisterPage(BaseCase):
 
     @pytest.mark.UI
     @pytest.mark.BUG
+    @allure.description("Positive registration case; Insert into database is expecting")
     def test_create_user_correct(self):
         user = self.generate_user()
         username = user['username']

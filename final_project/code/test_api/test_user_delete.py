@@ -36,7 +36,7 @@ class TestApiUserDelete(ApiBaseCase):
         assert resp.status_code == expected_status
 
     @pytest.mark.parametrize('method', ['POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE', 'PATCH'])
-    @pytest.mark.UNSTABLE
+    @pytest.mark.BUG
     def test_invalid_methods(self, method):
         user = self.mysql_builder.create_user()
 

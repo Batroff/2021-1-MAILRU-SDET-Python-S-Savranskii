@@ -6,6 +6,9 @@ from api.client import ApiClient
 
 class AppApiClient(ApiClient):
 
+    def get_status(self):
+        return self._request(method='GET', location='status')
+
     def add_user(self, username, password, email,
                  method=None, headers=None, cookies=None, expected_status=None):
         if method is None:

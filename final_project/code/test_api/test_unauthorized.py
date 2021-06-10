@@ -9,6 +9,7 @@ class TestUnauthorizedApiOperations(ApiBaseCase):
         * Unauthorized add user
         * Unauthorized delete user
         * Unauthorized block user
+        * Unauthorized block user
     """
 
     def test_unauthorized_user_add(self, test_user):

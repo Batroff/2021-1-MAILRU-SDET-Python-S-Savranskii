@@ -1,5 +1,6 @@
 import os
 
+import allure
 import pytest
 
 from test_ui.base import BaseCase
@@ -27,6 +28,8 @@ class TestHomePageMenu(BaseCase):
 
     authorize = True
 
+    @pytest.mark.UI
+    @allure.description("When user logs out, flag user.active should change from 1 to 0 and url redirected to auth_page")
     def test_logout_button(self):
         self.home_page.logout()
 
@@ -36,12 +39,16 @@ class TestHomePageMenu(BaseCase):
         assert user.active == 0
         assert self.auth_page.is_opened()
 
+    @pytest.mark.UI
+    @allure.description("Username must match displayed name in menu")
     def test_logged_name(self):
         menu_username = self.home_page.get_username()
         curr_username = os.environ.get('USER_USERNAME')
 
         assert curr_username == menu_username
 
+    @pytest.mark.UI
+    @allure.description("Vk_id must match displayed name in menu")
     def test_vk_id(self):
         menu_id = self.home_page.get_vk_id()
 
@@ -50,14 +57,19 @@ class TestHomePageMenu(BaseCase):
 
         assert menu_id == curr_id
 
+    @pytest.mark.UI
+    @allure.description("Redirect to home page from menu")
     def test_home_link(self):
         self.home_page = self.home_page.go_to_home_page()
         assert self.home_page.is_opened()
 
+    @pytest.mark.UI
+    @allure.description("Redirect to python page from menu")
     def test_python_link(self):
         self.home_page.go_to_linked_page('Python')
         assert 'https://www.python.org/' == self.driver.current_url
 
+    @allure.description("Redirect to external pages (some open in new window) from dropdown navigation menu")
     @pytest.mark.parametrize("link_params,expected_url", [
         ({'header': 'Python', 'dropdown': 'Python history'}, 'https://en.wikipedia.org/wiki/History_of_Python'),
         ({'header': 'Python', 'dropdown': 'About Flask'}, 'https://flask.palletsprojects.com/en/1.1.x/#'),
@@ -73,6 +85,7 @@ class TestHomePageMenu(BaseCase):
         'Network Download',
         'Network Examples',
     ])
+    @pytest.mark.UI
     def test_dropdown_link(self, link_params, expected_url):
         target = self.home_page.get_link_target(link_text=link_params['dropdown'])
 
@@ -109,6 +122,8 @@ class TestHomePageBody(BaseCase):
         'Future of internet',
         'Lets talk about SMTP?',
     ])
+    @pytest.mark.UI
+    @allure.description("Redirect to external pages from image")
     def test_image_links(self, link_name, expected_url):
         self.home_page.go_to_image_linked_page(link_name)
 
