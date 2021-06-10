@@ -22,7 +22,7 @@ class TestAuthPage(BaseCase):
         {
             'username': fake.lexify('?' * i),
             'password': fake.password()
-        } for i in [random.randint(1, 6), random.randint(17, 200)]
+        } for i in [random.randint(1, 5), random.randint(17, 200)]
     ])
     @pytest.mark.UI
     @allure.description("Login validation check")
