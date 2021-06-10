@@ -1,3 +1,4 @@
+import allure
 import pytest
 
 from test_api.base import ApiBaseCase
@@ -18,6 +19,7 @@ class TestApiUserDelete(ApiBaseCase):
         admin = self.mysql_builder.create_user()
         self.app_api_client.login(admin.username, admin.password)
 
+    @allure.description("Positive delete case, expect remove user from db")
     def test_delete(self):
         user = self.mysql_builder.create_user()
 
@@ -29,6 +31,7 @@ class TestApiUserDelete(ApiBaseCase):
     @pytest.mark.parametrize('username',
                              [fake.lexify('????????'), ''],
                              ids=['Random username', 'Empty username'])
+    @allure.description("Delete user by invalid username, expect 404 status code from API")
     def test_invalid_username(self, username):
         expected_status = 404
         resp = self.app_api_client.delete_user(username=username, expected_status=[expected_status])
@@ -37,6 +40,7 @@ class TestApiUserDelete(ApiBaseCase):
 
     @pytest.mark.parametrize('method', ['POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE', 'PATCH'])
     @pytest.mark.BUG
+    @allure.description("Delete user by invalid methods, expect 405 status code from API")
     def test_invalid_methods(self, method):
         user = self.mysql_builder.create_user()
 

@@ -1,3 +1,4 @@
+import allure
 import pytest
 from faker import Faker
 
@@ -19,6 +20,7 @@ class TestApiUserBlock(ApiBaseCase):
         admin = self.mysql_builder.create_user()
         self.app_api_client.login(admin.username, admin.password)
 
+    @allure.description("Positive block user case, expect access change to 0")
     def test_block(self):
         user = self.mysql_builder.create_user()
 
@@ -27,6 +29,7 @@ class TestApiUserBlock(ApiBaseCase):
         query = self.mysql_builder.select_user(username=user.username)
         assert query.access == 0
 
+    @allure.description("Block banned user, expect access doesn't change")
     def test_block_banned_user(self):
         user = self.mysql_builder.create_user(access=0)
 
@@ -46,6 +49,7 @@ class TestApiUserBlock(ApiBaseCase):
 
     @pytest.mark.parametrize('method', ['POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE', 'PATCH'])
     @pytest.mark.BUG
+    @allure.description("Block user by invalid methods, expect 405 status code from API")
     def test_invalid_methods(self, method):
         user = self.mysql_builder.create_user()
 

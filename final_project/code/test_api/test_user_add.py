@@ -21,6 +21,7 @@ class TestApiUserAdd(ApiBaseCase):
         self.app_api_client.login(admin.username, admin.password)
 
     @pytest.mark.BUG
+    @allure.description("Positive add user case, expect user in db")
     def test_add_user(self, test_user):
         self.app_api_client.add_user(username=test_user.username,
                                      password=test_user.password,
@@ -43,6 +44,7 @@ class TestApiUserAdd(ApiBaseCase):
         "password_long"
     ])
     @pytest.mark.BUG
+    @allure.description("Add user with invalid data, expect 400 status code from API, user is not in db")
     def test_invalid_data(self, invalid_user, expected_status):
         user = self.mysql_builder.create_user(push=False)
         username = invalid_user.get("username", user.username)
@@ -57,6 +59,7 @@ class TestApiUserAdd(ApiBaseCase):
         query = self.mysql_builder.select_user(username=user.username)
         assert query is None
 
+    @allure.description("Add user with duplicate username, expect 304 status code from API, only one user in db")
     def test_duplicate_username(self, test_user):
         user = self.mysql_builder.create_user()
 
@@ -67,6 +70,7 @@ class TestApiUserAdd(ApiBaseCase):
         assert isinstance(query, User)
 
     @pytest.mark.BUG
+    @allure.description("Add user with duplicate email, expect 304 status code from API, only one user in db")
     def test_duplicate_email(self, test_user):
         user = self.mysql_builder.create_user()
 
@@ -77,6 +81,7 @@ class TestApiUserAdd(ApiBaseCase):
         assert isinstance(query, User)
 
     @pytest.mark.BUG
+    @allure.description("Add user with invalid methods, expect 400 status code from API, user is not in db")
     def test_invalid_headers(self, test_user):
         self.app_api_client.add_user(username=test_user.username,
                                      password=test_user.password,
@@ -87,7 +92,9 @@ class TestApiUserAdd(ApiBaseCase):
         query = self.mysql_builder.select_user(username=test_user.username)
         assert query is None
 
-    @pytest.mark.parametrize("method", ['GET', 'PUT', 'DELETE', 'HEAD', pytest.param('OPTIONS', marks=pytest.mark.BUG), 'CONNECT', 'TRACE', 'PATCH'])
+    @pytest.mark.parametrize("method", ['GET', 'PUT', 'DELETE', 'HEAD', pytest.param('OPTIONS', marks=pytest.mark.BUG),
+                                        'CONNECT', 'TRACE', 'PATCH'])
+    @allure.description("Add user by invalid methods, expect 405 status code from API")
     def test_invalid_method(self, test_user, method):
         self.app_api_client.add_user(username=test_user.username,
                                      password=test_user.password,
