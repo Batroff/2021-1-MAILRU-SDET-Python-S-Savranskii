@@ -1,11 +1,17 @@
 version: "2.1"
+
+networks:
+  default:
+    external: true
+    name: testing_network
+
 services:
   mysql:
     image: percona:latest
     ports:
       - "3306:3306"
     volumes:
-      - ./init/mysql-init.sql:/docker-entrypoint-initdb.d/1.sql
+      - "./init/mysql-init.sql:/docker-entrypoint-initdb.d/1.sql"
     environment:
       MYSQL_ROOT_PASSWORD: root
     healthcheck:
@@ -19,11 +25,13 @@ services:
     ports:
       - "8081:8081"
     volumes:
-      - ./init/wait_for_mock.sh:/app/wait_for_mock.sh
-      - ./init/app-config:/app/app-config
+      - "./init/wait_for_mock.sh:/app/wait_for_mock.sh"
+      - "./init/app-config:/app/app-config"
     depends_on:
       mysql:
         condition: service_healthy
+      selenoid:
+        condition: service_started
 
   vk_mock:
     image: vk_mock
@@ -35,8 +43,21 @@ services:
       MOCK_HOST: '0.0.0.0'
       MOCK_PORT: '8090'
 
-# docker network create testing_network; docker network connect testing_network <container-selenoid>
-networks:
-  default:
-    external: true
-    name: testing_network
+  selenoid:
+    image: aerokube/selenoid:1.10.3
+    network_mode: bridge
+    ports:
+      - "4444:4444"
+    volumes:
+      - "./init/browsers.json:/selenoid/browsers.json"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: ["-conf", "/selenoid/browsers.json"]
+
+  selenoid-ui:
+    links:
+      - selenoid
+    image: aerokube/selenoid-ui:latest
+    network_mode: bridge
+    ports:
+      - "8080:8080"
+    command: ["--selenoid-uri", "http://selenoid:4444"]
